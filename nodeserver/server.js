@@ -18,9 +18,12 @@ const {google} = require('googleapis');
 var datum = new Date();
 var CurrentUnixTime = (datum.getTime() / 1000).toFixed(0);
 
-setInterval(function(){
-  listEvents();
+var storedAuth;
+
+setInterval(() => {
+  listEvents(storedAuth);
 },10000);
+
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 // The file token.json stores the user's access and refresh tokens, and is
@@ -32,7 +35,10 @@ const TOKEN_PATH = 'token.json';
 fs.readFile('credentials.json', (err, content) => {
   if (err) return console.log('Error loading client secret file:', err);
   // Authorize a client with credentials, then call the Google Calendar API.
-  authorize(JSON.parse(content), listEvents);
+  authorize(JSON.parse(content), function(auth) {
+    storedAuth = auth;
+    listEvents(storedAuth);
+  });
 });
 
 /**
@@ -112,7 +118,7 @@ function listEvents(auth) {
   
         if (CurrentUnixTime >= FirstUnixTime && CurrentUnixTime <= SecondUnixTime){
           console.log("Times Match");
-          fs.writeFile("Content.txt", SummaryEvent, (err) => {
+          fs.writeFile("Content1.txt", SummaryEvent, (err) => {
             if (err) return console.error(err);
             console.log('Token stored to', "Content.txt");
           });
