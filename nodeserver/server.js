@@ -91,6 +91,21 @@ function getAccessToken(oAuth2Client, callback) {
   });
 }
 
+function writeToFile(SummaryEvent) {
+  fs.readFile('Content.txt', (err, data) => {
+    if (err) throw err;
+    console.log(data.toString());
+    if (data.toString() == SummaryEvent){
+      console.log('Events match');
+    } else {
+      fs.writeFile("Content.txt", SummaryEvent, (err) => {
+        if (err) return console.error(err);
+        console.log('Token stored to', "Content.txt");
+      });
+    }
+  });
+}
+
 /**
  * Lists the next 10 events on the user's primary calendar.
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
@@ -115,13 +130,10 @@ function listEvents(auth) {
         SummaryEvent = event.summary;
         FirstUnixTime = FirstEventTime.getTime() /1000;
         SecondUnixTime = SecondEventTime.getTime() /1000;
-  
+        
         if (CurrentUnixTime >= FirstUnixTime && CurrentUnixTime <= SecondUnixTime){
-          console.log("Times Match");
-          fs.writeFile("Content1.txt", SummaryEvent, (err) => {
-            if (err) return console.error(err);
-            console.log('Token stored to', "Content.txt");
-          });
+          console.log("Times Match", SummaryEvent);
+          writeToFile(SummaryEvent);
         }
         
       })
